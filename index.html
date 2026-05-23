@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlashCalc — Percentage Power Tool</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --card: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #22d3ee;
+      --accent-2: #a78bfa;
+      --ok: #34d399;
+      --danger: #f87171;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top right, #1e1b4b, var(--bg) 40%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: min(980px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: color-mix(in srgb, var(--panel) 82%, black);
+      border: 1px solid #334155;
+      border-radius: 22px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 22px;
+      border-bottom: 1px solid #334155;
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(167, 139, 250, 0.08));
+    }
+
+    .brand {
+      margin: 0;
+      font-size: clamp(1.5rem, 4vw, 2.1rem);
+      letter-spacing: 0.4px;
+      font-weight: 800;
+    }
+
+    .tagline {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.97rem;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid #374151;
+      border-radius: var(--radius);
+      padding: 16px;
+      flex: 1 1 300px;
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.06rem;
+    }
+
+    p.helper {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      flex: 1 1 150px;
+      min-width: 120px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color .15s ease;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    button {
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1020;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      align-self: flex-start;
+      transition: transform .1s ease, filter .2s ease;
+    }
+
+    button:hover { filter: brightness(1.05); }
+    button:active { transform: translateY(1px); }
+
+    .result {
+      border-radius: 10px;
+      background: #0b1220;
+      border: 1px dashed #475569;
+      padding: 11px 12px;
+      color: var(--ok);
+      font-weight: 700;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+
+    .error {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .footer {
+      padding: 0 16px 16px;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    @media (max-width: 640px) {
+      .app { border-radius: 16px; }
+      .header { padding: 18px; }
+      .grid { padding: 12px; }
+      .card { min-width: 100%; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" role="application" aria-label="FlashCalc percentage calculator">
+    <header class="header">
+      <h1 class="brand">FlashCalc ⚡</h1>
+      <p class="tagline">The attention-grabbing way to crunch percentages in seconds.</p>
+    </header>
+
+    <section class="grid">
+      <article class="card">
+        <h2>1) What is X% of Y?</h2>
+        <p class="helper">Great for discounts, tips, taxes, and quick mental-math checks.</p>
+        <div class="row">
+          <label>Percentage (X)
+            <input id="p1" type="number" inputmode="decimal" placeholder="e.g. 15" />
+          </label>
+          <label>Value (Y)
+            <input id="v1" type="number" inputmode="decimal" placeholder="e.g. 240" />
+          </label>
+        </div>
+        <button onclick="calcPart()">Calculate</button>
+        <div id="r1" class="result">Enter values and press Calculate.</div>
+      </article>
+
+      <article class="card">
+        <h2>2) X is what percent of Y?</h2>
+        <p class="helper">Useful for performance, growth, and ratio comparisons.</p>
+        <div class="row">
+          <label>Part (X)
+            <input id="p2" type="number" inputmode="decimal" placeholder="e.g. 30" />
+          </label>
+          <label>Whole (Y)
+            <input id="v2" type="number" inputmode="decimal" placeholder="e.g. 120" />
+          </label>
+        </div>
+        <button onclick="calcPercent()">Calculate</button>
+        <div id="r2" class="result">Enter values and press Calculate.</div>
+      </article>
+
+      <article class="card">
+        <h2>3) Add/Subtract percentage</h2>
+        <p class="helper">Apply increases/decreases for price updates and projections.</p>
+        <div class="row">
+          <label>Starting Value
+            <input id="base" type="number" inputmode="decimal" placeholder="e.g. 89.99" />
+          </label>
+          <label>Percent Change
+            <input id="chg" type="number" inputmode="decimal" placeholder="e.g. 20" />
+          </label>
+        </div>
+        <div class="row">
+          <button onclick="applyChange(1)">Add %</button>
+          <button onclick="applyChange(-1)">Subtract %</button>
+        </div>
+        <div id="r3" class="result">Enter values and press a button.</div>
+      </article>
+    </section>
+
+    <footer class="footer">Built with pure HTML, CSS (Flexbox), and JavaScript — no libraries.</footer>
+  </main>
+
+  <script>
+    const fmt = (n) => Number.isFinite(n)
+      ? n.toLocaleString(undefined, { maximumFractionDigits: 6 })
+      : null;
+
+    function setResult(id, message, ok = true) {
+      const el = document.getElementById(id);
+      el.innerHTML = ok ? message : `<span class="error">${message}</span>`;
+    }
+
+    function num(id) {
+      return Number(document.getElementById(id).value);
+    }
+
+    function valid(...vals) {
+      return vals.every(v => Number.isFinite(v));
+    }
+
+    function calcPart() {
+      const p = num('p1');
+      const v = num('v1');
+      if (!valid(p, v)) return setResult('r1', 'Please enter valid numbers.', false);
+      const ans = (p / 100) * v;
+      setResult('r1', `${p}% of ${fmt(v)} = ${fmt(ans)}`);
+    }
+
+    function calcPercent() {
+      const p = num('p2');
+      const v = num('v2');
+      if (!valid(p, v)) return setResult('r2', 'Please enter valid numbers.', false);
+      if (v === 0) return setResult('r2', 'Whole value cannot be 0.', false);
+      const ans = (p / v) * 100;
+      setResult('r2', `${fmt(p)} is ${fmt(ans)}% of ${fmt(v)}`);
+    }
+
+    function applyChange(direction) {
+      const base = num('base');
+      const chg = num('chg');
+      if (!valid(base, chg)) return setResult('r3', 'Please enter valid numbers.', false);
+      const factor = 1 + direction * (chg / 100);
+      const ans = base * factor;
+      const label = direction > 0 ? 'after adding' : 'after subtracting';
+      setResult('r3', `${fmt(base)} ${label} ${chg}% = ${fmt(ans)}`);
+    }
+  </script>
+</body>
+</html>
