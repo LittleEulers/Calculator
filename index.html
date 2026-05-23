@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StreakSpark — Daily Habit Streak Tracker</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #11172a;
+      --card: #1a2238;
+      --line: #2e3a59;
+      --text: #e8edff;
+      --muted: #9eb0d5;
+      --accent: #7c3aed;
+      --accent-2: #22d3ee;
+      --ok: #34d399;
+      --warn: #f59e0b;
+      --danger: #f87171;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at 90% 0%, #1d1b4f, var(--bg) 42%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .app {
+      width: min(1050px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(124,58,237,.22), rgba(34,211,238,.15));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .brand { margin: 0; font-size: clamp(1.55rem, 4vw, 2.25rem); font-weight: 800; }
+    .tagline { margin: 8px 0 0; color: var(--muted); }
+
+    .layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      flex: 1 1 330px;
+      min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    h2 { margin: 0; font-size: 1.05rem; }
+    .helper { margin: 0; color: var(--muted); font-size: .92rem; }
+
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    input, select {
+      width: 100%;
+      border: 1px solid #425176;
+      background: #0f172a;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.98rem;
+      outline: none;
+    }
+
+    label { flex: 1 1 180px; font-size: .88rem; color: #d5ddf5; display: flex; flex-direction: column; gap: 6px; }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1020;
+    }
+
+    button.secondary {
+      background: #1f2a48;
+      color: #d8e1ff;
+      border: 1px solid #425176;
+    }
+
+    .stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      background: #0f172a;
+      border: 1px solid #3d4c71;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: .85rem;
+    }
+
+    ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+
+    .habit {
+      border: 1px solid #3a476a;
+      border-radius: 12px;
+      padding: 10px;
+      background: #0e152b;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .habit-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .habit-name { font-weight: 700; }
+    .meta { color: var(--muted); font-size: .85rem; }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .danger { color: var(--danger); }
+
+    .empty { color: var(--muted); border: 1px dashed #41507a; border-radius: 10px; padding: 12px; text-align: center; }
+
+    @media (max-width: 680px) {
+      .card { min-width: 100%; }
+      button { width: 100%; }
+      .row button { flex: 1 1 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" role="application" aria-label="StreakSpark habit tracker">
+    <header class="hero">
+      <h1 class="brand">StreakSpark ✨</h1>
+      <p class="tagline">A practical daily habit streak tracker that helps people stay consistent — simple, sticky, and SEO-friendly.</p>
+    </header>
+
+    <section class="layout">
+      <article class="card">
+        <h2>Add a Habit</h2>
+        <p class="helper">Track routines like water intake, reading, workouts, language practice, or journaling.</p>
+        <div class="row">
+          <label>Habit Name
+            <input id="habitName" type="text" placeholder="e.g. 20 min reading" maxlength="60" />
+          </label>
+          <label>Category
+            <select id="habitCategory">
+              <option>Health</option>
+              <option>Productivity</option>
+              <option>Learning</option>
+              <option>Wellness</option>
+              <option>Finance</option>
+              <option>Custom</option>
+            </select>
+          </label>
+        </div>
+        <button id="addHabitBtn">Add Habit</button>
+
+        <div class="stats" id="globalStats"></div>
+      </article>
+
+      <article class="card">
+        <h2>My Streaks</h2>
+        <p class="helper">Data is saved locally in your browser with no sign-up and no external APIs.</p>
+        <ul id="habitList"></ul>
+        <div id="emptyState" class="empty">No habits yet. Add your first habit to start building streak momentum.</div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const STORE_KEY = 'streakspark_habits_v1';
+    let habits = [];
+
+    const $ = (id) => document.getElementById(id);
+
+    function todayISO() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function saveHabits() {
+      localStorage.setItem(STORE_KEY, JSON.stringify(habits));
+    }
+
+    function loadHabits() {
+      try {
+        habits = JSON.parse(localStorage.getItem(STORE_KEY)) || [];
+      } catch {
+        habits = [];
+      }
+    }
+
+    function daysBetween(dateA, dateB) {
+      const a = new Date(dateA + 'T00:00:00');
+      const b = new Date(dateB + 'T00:00:00');
+      const diff = (b - a) / 86400000;
+      return Math.round(diff);
+    }
+
+    function addHabit() {
+      const name = $('habitName').value.trim();
+      const category = $('habitCategory').value;
+      if (!name) return;
+
+      const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
+      habits.push({
+        id,
+        name,
+        category,
+        streak: 0,
+        best: 0,
+        completions: 0,
+        lastCompleted: null,
+        createdAt: todayISO()
+      });
+
+      $('habitName').value = '';
+      saveHabits();
+      render();
+    }
+
+    function completeHabit(id) {
+      const habit = habits.find(h => h.id === id);
+      if (!habit) return;
+      const today = todayISO();
+
+      if (habit.lastCompleted === today) return;
+
+      if (!habit.lastCompleted) {
+        habit.streak = 1;
+      } else {
+        const gap = daysBetween(habit.lastCompleted, today);
+        habit.streak = gap === 1 ? habit.streak + 1 : 1;
+      }
+
+      habit.lastCompleted = today;
+      habit.completions += 1;
+      habit.best = Math.max(habit.best, habit.streak);
+      saveHabits();
+      render();
+    }
+
+    function resetHabit(id) {
+      const habit = habits.find(h => h.id === id);
+      if (!habit) return;
+      habit.streak = 0;
+      habit.lastCompleted = null;
+      saveHabits();
+      render();
+    }
+
+    function deleteHabit(id) {
+      habits = habits.filter(h => h.id !== id);
+      saveHabits();
+      render();
+    }
+
+    function statusLabel(habit) {
+      if (!habit.lastCompleted) return '<span class="meta">Not started</span>';
+      const gap = daysBetween(habit.lastCompleted, todayISO());
+      if (gap === 0) return '<span class="ok">Done today ✅</span>';
+      if (gap === 1) return '<span class="warn">Due today ⏳</span>';
+      return '<span class="danger">Streak paused</span>';
+    }
+
+    function renderStats() {
+      const total = habits.length;
+      const active = habits.filter(h => h.lastCompleted && daysBetween(h.lastCompleted, todayISO()) <= 1).length;
+      const best = habits.reduce((max, h) => Math.max(max, h.best), 0);
+      $('globalStats').innerHTML = `
+        <span class="pill">Habits: <strong>${total}</strong></span>
+        <span class="pill">Active streaks: <strong>${active}</strong></span>
+        <span class="pill">Best streak: <strong>${best}</strong> days</span>
+      `;
+    }
+
+    function render() {
+      const list = $('habitList');
+      const empty = $('emptyState');
+      list.innerHTML = '';
+
+      if (!habits.length) {
+        empty.style.display = 'block';
+      } else {
+        empty.style.display = 'none';
+      }
+
+      habits.forEach(habit => {
+        const item = document.createElement('li');
+        item.className = 'habit';
+        item.innerHTML = `
+          <div class="habit-top">
+            <div>
+              <div class="habit-name">${habit.name}</div>
+              <div class="meta">${habit.category} • Created ${habit.createdAt}</div>
+            </div>
+            ${statusLabel(habit)}
+          </div>
+          <div class="stats">
+            <span class="pill">Current: <strong>${habit.streak}</strong></span>
+            <span class="pill">Best: <strong>${habit.best}</strong></span>
+            <span class="pill">Completions: <strong>${habit.completions}</strong></span>
+          </div>
+          <div class="row">
+            <button data-action="complete">Mark Done</button>
+            <button data-action="reset" class="secondary">Reset</button>
+            <button data-action="delete" class="secondary">Delete</button>
+          </div>
+        `;
+
+        item.querySelector('[data-action="complete"]').addEventListener('click', () => completeHabit(habit.id));
+        item.querySelector('[data-action="reset"]').addEventListener('click', () => resetHabit(habit.id));
+        item.querySelector('[data-action="delete"]').addEventListener('click', () => deleteHabit(habit.id));
+
+        list.appendChild(item);
+      });
+
+      renderStats();
+    }
+
+    $('addHabitBtn').addEventListener('click', addHabit);
+    $('habitName').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addHabit();
+    });
+
+    loadHabits();
+    render();
+  </script>
+</body>
+</html>
