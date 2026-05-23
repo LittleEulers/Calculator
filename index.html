@@ -3,19 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlashCalc — Percentage Power Tool</title>
+  <title>StreakSpark — Daily Habit Streak Tracker</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --card: #1f2937;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #22d3ee;
-      --accent-2: #a78bfa;
+      --bg: #0b1020;
+      --panel: #11172a;
+      --card: #1a2238;
+      --line: #2e3a59;
+      --text: #e8edff;
+      --muted: #9eb0d5;
+      --accent: #7c3aed;
+      --accent-2: #22d3ee;
       --ok: #34d399;
+      --warn: #f59e0b;
       --danger: #f87171;
-      --radius: 16px;
+      --radius: 14px;
     }
 
     * { box-sizing: border-box; }
@@ -23,259 +25,334 @@
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background: radial-gradient(circle at top right, #1e1b4b, var(--bg) 40%);
+      background: radial-gradient(circle at 90% 0%, #1d1b4f, var(--bg) 42%);
       color: var(--text);
       min-height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
     }
 
     .app {
-      width: min(980px, 100%);
+      width: min(1050px, 100%);
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      background: color-mix(in srgb, var(--panel) 82%, black);
-      border: 1px solid #334155;
-      border-radius: 22px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
-      overflow: hidden;
+      gap: 14px;
     }
 
-    .header {
-      padding: 22px;
-      border-bottom: 1px solid #334155;
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(167, 139, 250, 0.08));
+    .hero {
+      background: linear-gradient(135deg, rgba(124,58,237,.22), rgba(34,211,238,.15));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
     }
 
-    .brand {
-      margin: 0;
-      font-size: clamp(1.5rem, 4vw, 2.1rem);
-      letter-spacing: 0.4px;
-      font-weight: 800;
-    }
+    .brand { margin: 0; font-size: clamp(1.55rem, 4vw, 2.25rem); font-weight: 800; }
+    .tagline { margin: 8px 0 0; color: var(--muted); }
 
-    .tagline {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 0.97rem;
-    }
-
-    .grid {
+    .layout {
       display: flex;
       flex-wrap: wrap;
       gap: 14px;
-      padding: 16px;
     }
 
     .card {
       background: var(--card);
-      border: 1px solid #374151;
+      border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 16px;
-      flex: 1 1 300px;
-      min-width: 260px;
+      padding: 14px;
+      flex: 1 1 330px;
+      min-width: 280px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-    }
-
-    h2 {
-      margin: 0;
-      font-size: 1.06rem;
-    }
-
-    p.helper {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .row {
-      display: flex;
       gap: 10px;
-      flex-wrap: wrap;
     }
 
-    label {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 0.9rem;
-      color: #cbd5e1;
-      flex: 1 1 150px;
-      min-width: 120px;
-    }
+    h2 { margin: 0; font-size: 1.05rem; }
+    .helper { margin: 0; color: var(--muted); font-size: .92rem; }
 
-    input {
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    input, select {
       width: 100%;
-      border: 1px solid #475569;
+      border: 1px solid #425176;
       background: #0f172a;
       color: var(--text);
       border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 1rem;
+      padding: 10px;
+      font-size: 0.98rem;
       outline: none;
-      transition: border-color .15s ease;
     }
 
-    input:focus {
-      border-color: var(--accent);
-    }
+    label { flex: 1 1 180px; font-size: .88rem; color: #d5ddf5; display: flex; flex-direction: column; gap: 6px; }
 
     button {
       border: none;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #0b1020;
       border-radius: 10px;
-      padding: 10px 14px;
+      padding: 9px 12px;
       font-weight: 700;
       cursor: pointer;
-      align-self: flex-start;
-      transition: transform .1s ease, filter .2s ease;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1020;
     }
 
-    button:hover { filter: brightness(1.05); }
-    button:active { transform: translateY(1px); }
+    button.secondary {
+      background: #1f2a48;
+      color: #d8e1ff;
+      border: 1px solid #425176;
+    }
 
-    .result {
-      border-radius: 10px;
-      background: #0b1220;
-      border: 1px dashed #475569;
-      padding: 11px 12px;
-      color: var(--ok);
-      font-weight: 700;
-      min-height: 44px;
+    .stats {
       display: flex;
-      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .error {
-      color: var(--danger);
-      font-weight: 600;
-    }
-
-    .footer {
-      padding: 0 16px 16px;
+    .pill {
+      background: #0f172a;
+      border: 1px solid #3d4c71;
       color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 10px;
       font-size: .85rem;
     }
 
-    @media (max-width: 640px) {
-      .app { border-radius: 16px; }
-      .header { padding: 18px; }
-      .grid { padding: 12px; }
+    ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+
+    .habit {
+      border: 1px solid #3a476a;
+      border-radius: 12px;
+      padding: 10px;
+      background: #0e152b;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .habit-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .habit-name { font-weight: 700; }
+    .meta { color: var(--muted); font-size: .85rem; }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .danger { color: var(--danger); }
+
+    .empty { color: var(--muted); border: 1px dashed #41507a; border-radius: 10px; padding: 12px; text-align: center; }
+
+    @media (max-width: 680px) {
       .card { min-width: 100%; }
       button { width: 100%; }
+      .row button { flex: 1 1 100%; }
     }
   </style>
 </head>
 <body>
-  <main class="app" role="application" aria-label="FlashCalc percentage calculator">
-    <header class="header">
-      <h1 class="brand">FlashCalc ⚡</h1>
-      <p class="tagline">The attention-grabbing way to crunch percentages in seconds.</p>
+  <main class="app" role="application" aria-label="StreakSpark habit tracker">
+    <header class="hero">
+      <h1 class="brand">StreakSpark ✨</h1>
+      <p class="tagline">A practical daily habit streak tracker that helps people stay consistent — simple, sticky, and SEO-friendly.</p>
     </header>
 
-    <section class="grid">
+    <section class="layout">
       <article class="card">
-        <h2>1) What is X% of Y?</h2>
-        <p class="helper">Great for discounts, tips, taxes, and quick mental-math checks.</p>
+        <h2>Add a Habit</h2>
+        <p class="helper">Track routines like water intake, reading, workouts, language practice, or journaling.</p>
         <div class="row">
-          <label>Percentage (X)
-            <input id="p1" type="number" inputmode="decimal" placeholder="e.g. 15" />
+          <label>Habit Name
+            <input id="habitName" type="text" placeholder="e.g. 20 min reading" maxlength="60" />
           </label>
-          <label>Value (Y)
-            <input id="v1" type="number" inputmode="decimal" placeholder="e.g. 240" />
+          <label>Category
+            <select id="habitCategory">
+              <option>Health</option>
+              <option>Productivity</option>
+              <option>Learning</option>
+              <option>Wellness</option>
+              <option>Finance</option>
+              <option>Custom</option>
+            </select>
           </label>
         </div>
-        <button onclick="calcPart()">Calculate</button>
-        <div id="r1" class="result">Enter values and press Calculate.</div>
+        <button id="addHabitBtn">Add Habit</button>
+
+        <div class="stats" id="globalStats"></div>
       </article>
 
       <article class="card">
-        <h2>2) X is what percent of Y?</h2>
-        <p class="helper">Useful for performance, growth, and ratio comparisons.</p>
-        <div class="row">
-          <label>Part (X)
-            <input id="p2" type="number" inputmode="decimal" placeholder="e.g. 30" />
-          </label>
-          <label>Whole (Y)
-            <input id="v2" type="number" inputmode="decimal" placeholder="e.g. 120" />
-          </label>
-        </div>
-        <button onclick="calcPercent()">Calculate</button>
-        <div id="r2" class="result">Enter values and press Calculate.</div>
-      </article>
-
-      <article class="card">
-        <h2>3) Add/Subtract percentage</h2>
-        <p class="helper">Apply increases/decreases for price updates and projections.</p>
-        <div class="row">
-          <label>Starting Value
-            <input id="base" type="number" inputmode="decimal" placeholder="e.g. 89.99" />
-          </label>
-          <label>Percent Change
-            <input id="chg" type="number" inputmode="decimal" placeholder="e.g. 20" />
-          </label>
-        </div>
-        <div class="row">
-          <button onclick="applyChange(1)">Add %</button>
-          <button onclick="applyChange(-1)">Subtract %</button>
-        </div>
-        <div id="r3" class="result">Enter values and press a button.</div>
+        <h2>My Streaks</h2>
+        <p class="helper">Data is saved locally in your browser with no sign-up and no external APIs.</p>
+        <ul id="habitList"></ul>
+        <div id="emptyState" class="empty">No habits yet. Add your first habit to start building streak momentum.</div>
       </article>
     </section>
-
-    <footer class="footer">Built with pure HTML, CSS (Flexbox), and JavaScript — no libraries.</footer>
   </main>
 
   <script>
-    const fmt = (n) => Number.isFinite(n)
-      ? n.toLocaleString(undefined, { maximumFractionDigits: 6 })
-      : null;
+    const STORE_KEY = 'streakspark_habits_v1';
+    let habits = [];
 
-    function setResult(id, message, ok = true) {
-      const el = document.getElementById(id);
-      el.innerHTML = ok ? message : `<span class="error">${message}</span>`;
+    const $ = (id) => document.getElementById(id);
+
+    function todayISO() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
     }
 
-    function num(id) {
-      return Number(document.getElementById(id).value);
+    function saveHabits() {
+      localStorage.setItem(STORE_KEY, JSON.stringify(habits));
     }
 
-    function valid(...vals) {
-      return vals.every(v => Number.isFinite(v));
+    function loadHabits() {
+      try {
+        habits = JSON.parse(localStorage.getItem(STORE_KEY)) || [];
+      } catch {
+        habits = [];
+      }
     }
 
-    function calcPart() {
-      const p = num('p1');
-      const v = num('v1');
-      if (!valid(p, v)) return setResult('r1', 'Please enter valid numbers.', false);
-      const ans = (p / 100) * v;
-      setResult('r1', `${p}% of ${fmt(v)} = ${fmt(ans)}`);
+    function daysBetween(dateA, dateB) {
+      const a = new Date(dateA + 'T00:00:00');
+      const b = new Date(dateB + 'T00:00:00');
+      const diff = (b - a) / 86400000;
+      return Math.round(diff);
     }
 
-    function calcPercent() {
-      const p = num('p2');
-      const v = num('v2');
-      if (!valid(p, v)) return setResult('r2', 'Please enter valid numbers.', false);
-      if (v === 0) return setResult('r2', 'Whole value cannot be 0.', false);
-      const ans = (p / v) * 100;
-      setResult('r2', `${fmt(p)} is ${fmt(ans)}% of ${fmt(v)}`);
+    function addHabit() {
+      const name = $('habitName').value.trim();
+      const category = $('habitCategory').value;
+      if (!name) return;
+
+      const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
+      habits.push({
+        id,
+        name,
+        category,
+        streak: 0,
+        best: 0,
+        completions: 0,
+        lastCompleted: null,
+        createdAt: todayISO()
+      });
+
+      $('habitName').value = '';
+      saveHabits();
+      render();
     }
 
-    function applyChange(direction) {
-      const base = num('base');
-      const chg = num('chg');
-      if (!valid(base, chg)) return setResult('r3', 'Please enter valid numbers.', false);
-      const factor = 1 + direction * (chg / 100);
-      const ans = base * factor;
-      const label = direction > 0 ? 'after adding' : 'after subtracting';
-      setResult('r3', `${fmt(base)} ${label} ${chg}% = ${fmt(ans)}`);
+    function completeHabit(id) {
+      const habit = habits.find(h => h.id === id);
+      if (!habit) return;
+      const today = todayISO();
+
+      if (habit.lastCompleted === today) return;
+
+      if (!habit.lastCompleted) {
+        habit.streak = 1;
+      } else {
+        const gap = daysBetween(habit.lastCompleted, today);
+        habit.streak = gap === 1 ? habit.streak + 1 : 1;
+      }
+
+      habit.lastCompleted = today;
+      habit.completions += 1;
+      habit.best = Math.max(habit.best, habit.streak);
+      saveHabits();
+      render();
     }
+
+    function resetHabit(id) {
+      const habit = habits.find(h => h.id === id);
+      if (!habit) return;
+      habit.streak = 0;
+      habit.lastCompleted = null;
+      saveHabits();
+      render();
+    }
+
+    function deleteHabit(id) {
+      habits = habits.filter(h => h.id !== id);
+      saveHabits();
+      render();
+    }
+
+    function statusLabel(habit) {
+      if (!habit.lastCompleted) return '<span class="meta">Not started</span>';
+      const gap = daysBetween(habit.lastCompleted, todayISO());
+      if (gap === 0) return '<span class="ok">Done today ✅</span>';
+      if (gap === 1) return '<span class="warn">Due today ⏳</span>';
+      return '<span class="danger">Streak paused</span>';
+    }
+
+    function renderStats() {
+      const total = habits.length;
+      const active = habits.filter(h => h.lastCompleted && daysBetween(h.lastCompleted, todayISO()) <= 1).length;
+      const best = habits.reduce((max, h) => Math.max(max, h.best), 0);
+      $('globalStats').innerHTML = `
+        <span class="pill">Habits: <strong>${total}</strong></span>
+        <span class="pill">Active streaks: <strong>${active}</strong></span>
+        <span class="pill">Best streak: <strong>${best}</strong> days</span>
+      `;
+    }
+
+    function render() {
+      const list = $('habitList');
+      const empty = $('emptyState');
+      list.innerHTML = '';
+
+      if (!habits.length) {
+        empty.style.display = 'block';
+      } else {
+        empty.style.display = 'none';
+      }
+
+      habits.forEach(habit => {
+        const item = document.createElement('li');
+        item.className = 'habit';
+        item.innerHTML = `
+          <div class="habit-top">
+            <div>
+              <div class="habit-name">${habit.name}</div>
+              <div class="meta">${habit.category} • Created ${habit.createdAt}</div>
+            </div>
+            ${statusLabel(habit)}
+          </div>
+          <div class="stats">
+            <span class="pill">Current: <strong>${habit.streak}</strong></span>
+            <span class="pill">Best: <strong>${habit.best}</strong></span>
+            <span class="pill">Completions: <strong>${habit.completions}</strong></span>
+          </div>
+          <div class="row">
+            <button data-action="complete">Mark Done</button>
+            <button data-action="reset" class="secondary">Reset</button>
+            <button data-action="delete" class="secondary">Delete</button>
+          </div>
+        `;
+
+        item.querySelector('[data-action="complete"]').addEventListener('click', () => completeHabit(habit.id));
+        item.querySelector('[data-action="reset"]').addEventListener('click', () => resetHabit(habit.id));
+        item.querySelector('[data-action="delete"]').addEventListener('click', () => deleteHabit(habit.id));
+
+        list.appendChild(item);
+      });
+
+      renderStats();
+    }
+
+    $('addHabitBtn').addEventListener('click', addHabit);
+    $('habitName').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addHabit();
+    });
+
+    loadHabits();
+    render();
   </script>
 </body>
 </html>
