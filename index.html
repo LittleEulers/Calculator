@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Fluid Keyboard LaTeX Formula & Matrix Canvas Editor with instant syntax conversion, matrix parsing, fraction handling, and technical reference documentation." />
+  <title>NovaTeX Forge — Fluid Keyboard LaTeX Formula & Matrix Canvas Editor</title>
+  <!-- Google AdSense bootstrap (paste your Publisher ID and enable when ready) -->
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+    crossorigin="anonymous"></script>
+  -->
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #111b2f;
+      --panel-2: #17233d;
+      --line: #2a3a5f;
+      --text: #e8eefc;
+      --muted: #9fb1d8;
+      --indigo: #6366f1;
+      --indigo-2: #818cf8;
+      --emerald: #10b981;
+      --danger: #fb7185;
+      --shadow: 0 18px 40px rgba(0, 0, 0, .35);
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top right, #1f2a52, var(--bg) 45%);
+      line-height: 1.55;
+    }
+    .wrap { width: min(1200px, 96%); margin: 16px auto 38px; }
+    .hero, .panel, .manual, footer { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .hero { padding: 18px; margin-bottom: 14px; }
+    .brand { margin: 0; font-size: clamp(1.4rem, 3.5vw, 2.1rem); font-weight: 800; }
+    .tag { color: var(--muted); margin: 8px 0 0; }
+    .ad-slot { border: 1px dashed #3b4f7f; border-radius: 12px; background: #0f1830; padding: 12px; color: #b7c5e8; text-align: center; }
+    .ad-header { margin-top: 14px; min-height: 80px; display:flex; align-items:center; justify-content:center; }
+
+    .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .panel { padding: 14px; }
+    .mono { font-family: SFMono-Regular, Menlo, Consolas, Monaco, monospace; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .macro {
+      border: 1px solid #3f5386;
+      background: linear-gradient(135deg, var(--indigo), var(--indigo-2));
+      color: #0a1020;
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    textarea {
+      width: 100%; min-height: 280px; resize: vertical; border-radius: 12px;
+      border: 1px solid #455b8e; background: #0f1933; color: var(--text);
+      padding: 12px; font-size: 15px; line-height: 1.65;
+    }
+    .error-line { min-height: 22px; color: var(--danger); font-weight: 600; margin-top: 8px; }
+    .output-box {
+      border: 1px solid #395183; border-radius: 12px; background: #0f1930; padding: 12px; margin-top: 8px;
+      white-space: pre-wrap; overflow-wrap: anywhere;
+    }
+    .good { color: var(--emerald); }
+    .label { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+    .preview {
+      margin-top: 12px; border: 1px solid #35527f; border-radius: 12px; background: #0e1b31; padding: 14px;
+      min-height: 160px;
+    }
+    .matrix { display: inline-grid; gap: 6px; padding: 6px 10px; border-left: 2px solid #7a8fbe; border-right: 2px solid #7a8fbe; border-radius: 4px; }
+    .matrix-row { display: flex; gap: 8px; justify-content: center; }
+    .frac { display: inline-grid; text-align: center; margin: 0 2px; }
+    .frac .bar { border-top: 1px solid #b9c8ef; margin: 2px 0; }
+    .sqrt::before { content: '√'; color: #d2defc; margin-right: 2px; }
+    .ad-inline { margin-top: 12px; min-height: 120px; display:flex; align-items:center; justify-content:center; }
+
+    .manual { margin-top: 16px; padding: 18px; }
+    .manual h2, .manual h3 { margin-top: 1.2em; }
+    .manual ul { padding-left: 1.2rem; }
+    footer { margin-top: 16px; padding: 14px; }
+    .footer-links { display:flex; flex-wrap: wrap; gap: 14px; }
+    .link-btn { color:#c7d6ff; text-decoration: underline; cursor: pointer; }
+    dialog { width:min(760px, 94%); background:#111b2f; color:var(--text); border:1px solid var(--line); border-radius: 12px; }
+    dialog::backdrop { background: rgba(0,0,0,.55); }
+    .close { margin-top: 12px; }
+
+    @media (max-width: 940px) { .dashboard { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1 class="brand">NovaTeX Forge — Fluid Keyboard LaTeX Formula & Matrix Canvas Editor</h1>
+      <p class="tag">Type algebraic text naturally. Instantly compile robust LaTeX output and plaintext matrix/fraction previews with a high-performance parsing pipeline.</p>
+      <div class="ad-slot ad-header" aria-label="Header AdSense placeholder">Responsive Header Ad Slot (AdSense)</div>
+    </header>
+
+    <section class="dashboard" aria-label="editor workspace">
+      <article class="panel">
+        <h2>Keyboard Canvas Input</h2>
+        <div class="toolbar" role="toolbar" aria-label="Fast Macro Toolbar">
+          <button class="macro mono" data-macro="[1, 2 ; 3, 4]">[1, 2 ; 3, 4]</button>
+          <button class="macro mono" data-macro="int(0, 1, x^2 dx)">int(0, 1, x^2 dx)</button>
+          <button class="macro mono" data-macro="lim(x, 0, sin(x)/x)">lim(x, 0, sin(x)/x)</button>
+          <button class="macro mono" data-macro="sqrt(a+b)">sqrt(a+b)</button>
+          <button class="macro mono" data-macro="(a+b)/(c+d)">(a+b)/(c+d)</button>
+        </div>
+        <textarea id="input" class="mono" spellcheck="false" aria-label="formula input">[a, b ; c, d] + int(0, pi, sin(x) dx) + lim(h, 0, (f(x+h)-f(x))/h) + sqrt(m^2+n^2)</textarea>
+        <div id="errorLine" class="error-line" role="status" aria-live="polite"></div>
+      </article>
+
+      <article class="panel">
+        <h2>Compiled Output</h2>
+        <p class="label">LaTeX Output</p>
+        <div id="latexOut" class="output-box mono"></div>
+        <p class="label">Plaintext Structural Preview</p>
+        <div id="previewOut" class="preview mono"></div>
+        <p class="label good">Engine Status: reactive compileInputEngine() active</p>
+        <div class="ad-slot ad-inline" aria-label="In-article AdSense placeholder">Responsive In-Article Ad Slot (AdSense)</div>
+      </article>
+    </section>
+
+    <article class="manual">
+      <h2>Technical Reference Manual: Semantic Math Parsing, Matrix Systems, and Production-Grade Formula Transformation</h2>
+      <p>Modern mathematical authoring interfaces are no longer judged only by visual polish. Serious users evaluate structural integrity, conversion determinism, error tolerance, and output portability. A formula editor that merely replaces a few keywords is fragile; a resilient editor must interpret intent under incomplete input, preserve user rhythm while typing, and output syntax that downstream renderers can trust. This guide documents how a keyboard-first formula engine should be built when speed, correctness, and maintainability are equally non-negotiable. The objective is to bridge plaintext notation and valid LaTeX while exposing parser behavior in a way that advanced users can reason about and audit.</p>
+      <h3>1) Parser Architecture and Token Pipeline Strategy</h3>
+      <p>A production parser begins with staged transformation. Instead of doing one giant regex replacement, the engine should process input through ordered passes: normalization, protected region extraction, structural conversions, then restoration. This ordering prevents collisions between patterns. For example, matrix commas define columns and should never be mistaken for function argument separators after matrix capture has begun. Likewise, fraction slash parsing should avoid matrix scopes, otherwise each matrix cell can be incorrectly split into numerator and denominator fragments.</p>
+      <ul>
+        <li><strong>Normalization pass:</strong> trim dangerous whitespace clusters, harmonize line endings, and preserve user spacing where it affects readability.</li>
+        <li><strong>Region protection pass:</strong> detect bracketed matrix blocks, replace them with stable placeholders, and store metadata arrays.</li>
+        <li><strong>Function conversion pass:</strong> convert <code>int()</code>, <code>lim()</code>, and <code>sqrt()</code> calls using strict argument parsing.</li>
+        <li><strong>Fraction pass:</strong> convert top-level slash operations only when operand boundaries are clear and balanced.</li>
+        <li><strong>Rehydration pass:</strong> restore matrix placeholders with final LaTeX snippets and preview models.</li>
+      </ul>
+      <p>By isolating matrix zones early, the fraction parser can remain aggressive for scalar expressions without corrupting tabular semantics. This method also simplifies debugging because each pass has well-defined invariants. If an invariant fails, the engine can emit a targeted error message without discarding prior valid transformations.</p>
+      <h3>2) Matrix Configuration Rules for Linear Algebra Workflows</h3>
+      <p>Matrices are high-value structures because they encode dimensional intent. The input grammar <code>[a, b, c ; d, e, f]</code> maps to rows separated by semicolons and columns separated by commas. Practical parsers must support nested expressions in cells, including function calls, powers, or grouped arithmetic. The parser should therefore split cells only at delimiter depth zero. A depth-aware scanner increments when it sees opening parentheses and decrements on closing parentheses; commas inside nested groups are ignored during cell segmentation. This allows entries such as <code>sqrt(a,b)</code> equivalents or <code>(x+y)/z</code> to remain intact as single cells.</p>
+      <p>LaTeX output for matrices typically uses <code>\begin{bmatrix}</code> and <code>\end{bmatrix}</code>. Column joins use ampersands and row joins use double backslashes. A robust engine should verify row length consistency and optionally warn when rows have mismatched column counts. While non-rectangular structures can still be emitted, surfacing a warning helps users catch accidental delimiter mistakes in data-heavy work.</p>
+      <h3>3) Integral Parsing Semantics</h3>
+      <p>The <code>int(lower, upper, expression)</code> pattern can represent bounded integrals. A practical tool should also allow indefinite integrals through <code>int(expression)</code> in extended implementations. For the bounded variant, strict parsing requires exactly three arguments at depth zero: lower bound, upper bound, and integrand expression. The resulting LaTeX form is <code>\int_{lower}^{upper} expression</code>. If the integrand includes a differential token such as <code>dx</code>, the engine should preserve it exactly; if omitted, the engine should not fabricate one unless the product requirement explicitly asks for automatic variable inference.</p>
+      <p>Because users often type rapidly, transient states like <code>int(0,1,</code> are expected. The correct behavior is not to crash or clear output, but to show a concise diagnostic such as “Integral call has unbalanced parentheses or incomplete arguments.” The rest of the expression may still compile in a partial mode.</p>
+      <h3>4) Limit Transformations and Approach Variables</h3>
+      <p>The grammar <code>lim(variable, approach, expression)</code> translates to <code>\lim_{variable \to approach} expression</code>. This structure is compact yet expressive. A strict parser should validate three arguments and preserve whitespace in the expression portion for readability. For educational contexts, exposing the transformed form helps learners understand canonical notation. In advanced workflows, this deterministic mapping is useful in code generation pipelines where formula strings are assembled from symbolic tools and then rendered in documentation or UI reports.</p>
+      <h3>5) Fraction Conversion Without Matrix Corruption</h3>
+      <p>Fraction conversion is deceptively difficult. A naive regex that replaces every slash instantly breaks URLs, dates, and matrix entries. A safe approach defines acceptable operands and applies replacements only in non-matrix regions. Operands may include alphanumeric runs, parenthesized groups, powers, or function calls. When expression complexity rises, token-based scanning outperforms regex-only approaches because token scanners can track balance depth and delimiter context directly.</p>
+      <p>In this editor, matrix blocks are tokenized into placeholders before fraction processing. Therefore, <code>[a/b, c ; d, e]</code> preserves matrix cell content untouched during fraction pass, fulfilling the requirement that slash parsing not alter active matrix arrays. Outside matrices, expression fragments like <code>(a+b)/(c+d)</code> become <code>\frac{a+b}{c+d}</code> while retaining nested terms.</p>
+      <h3>6) Radical Handling and Nested Arguments</h3>
+      <p>The radical grammar <code>sqrt(inner)</code> maps to <code>\sqrt{inner}</code>. Nested radicals and compositions with fractions should remain stable under repeated compile cycles. Idempotency matters: running the compiler multiple times over already transformed output should not keep mutating the same token into malformed sequences. A recommended policy is to compile only raw input space and avoid feeding generated LaTeX back into the parser loop.</p>
+      <h3>7) Reactive Compilation, Performance Budget, and UX Latency</h3>
+      <p>Interactive editors live or die by perceived latency. The compile loop must execute on input events with minimal allocations. Practical optimizations include reusing arrays, avoiding deep DOM rewrites, and writing output nodes in a single batch. If a manual grows large, isolate editor rendering from documentation rendering to avoid layout thrash. For typical formula lengths, sub-millisecond parser execution is achievable on modern devices when the tokenizer and regex passes are linear and bounded.</p>
+      <ul>
+        <li>Use event delegation for macro toolbar interactions.</li>
+        <li>Prefer textContent assignment for plain output to prevent unnecessary HTML parsing.</li>
+        <li>Guard regex loops against catastrophic backtracking by keeping patterns narrow.</li>
+        <li>Split concern boundaries: parse, transform, render preview, and render diagnostics independently.</li>
+      </ul>
+      <h3>8) Error Strategy and Defensive Engineering</h3>
+      <p>Defensive coding is mandatory in user-driven parsing systems. Every transformation pass should be wrapped in exception-safe routines. Catch blocks should capture the failing phase, preserve the last known good output if possible, and surface a non-disruptive error line. This creates trust because users never lose work due to temporary syntax mistakes. In enterprise-grade telemetry pipelines, you can also count parser failures by category to prioritize grammar improvements.</p>
+      <p>Error messages should be precise and actionable: unbalanced bracket, incomplete integral arguments, malformed limit call, or ambiguous fraction operand. Vague messages like “Syntax error” are less useful and increase abandonment. Clear diagnostics also improve SEO value when documentation mirrors the same error taxonomy users see in the tool.</p>
+      <h3>9) Accessibility, Legal Structure, and Ad Placement Readiness</h3>
+      <p>Accessibility and policy compliance are part of production readiness, not post-launch tasks. Inputs need labels, status announcements should use live regions, and toolbar buttons require semantic roles. Legal links for privacy, terms, and about pages can be modal-based for single-page deployments, helping users inspect governance content without navigation hops. For monetization readiness, reserved ad containers prevent disruptive future layout shifts and align with Core Web Vitals goals when dimensions are declared up front.</p>
+      <h3>10) Operational Workflow Recommendations</h3>
+      <p>Teams deploying formula editors should establish an operational checklist: parser unit tests for each grammar, snapshot tests for LaTeX output, performance benchmarks for keystroke latency, and content QA for documentation integrity. As new grammars are added (summations, products, piecewise functions), maintain deterministic pass ordering and update error taxonomy. This keeps the engine extensible and prevents regressions as complexity grows.</p>
+      <p>In summary, a high-quality keyboard LaTeX editor is a systems problem spanning parsing theory, UI ergonomics, legal readiness, and performance discipline. The architecture documented here enables reliable transformation from casual plaintext math into structurally sound LaTeX and readable previews, while preserving user flow and making room for sustainable monetization and search discoverability.</p>
+    </article>
+
+    <footer>
+      <strong>Operational Documentation</strong>
+      <div class="footer-links">
+        <span class="link-btn" data-doc="privacy">Privacy Policy</span>
+        <span class="link-btn" data-doc="terms">Terms of Service</span>
+        <span class="link-btn" data-doc="about">About Us</span>
+      </div>
+    </footer>
+  </div>
+
+  <dialog id="docModal">
+    <h3 id="docTitle"></h3>
+    <div id="docBody"></div>
+    <button class="macro close" id="closeModal">Close</button>
+  </dialog>
+
+  <script>
+    const input = document.getElementById('input');
+    const latexOut = document.getElementById('latexOut');
+    const previewOut = document.getElementById('previewOut');
+    const errorLine = document.getElementById('errorLine');
+
+    function splitTopLevel(text, delimiter) {
+      const out = []; let depth = 0; let current = '';
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (ch === '(' || ch === '[' || ch === '{') depth++;
+        if (ch === ')' || ch === ']' || ch === '}') depth--;
+        if (ch === delimiter && depth === 0) { out.push(current.trim()); current = ''; }
+        else current += ch;
+      }
+      out.push(current.trim());
+      return out;
+    }
+
+    function processMatrices(src, matrixStore) {
+      return src.replace(/\[((?:[^\[\]]|\[[^\]]*\])*)\]/g, (full, inner) => {
+        try {
+          const rows = splitTopLevel(inner, ';').map(r => splitTopLevel(r, ','));
+          const latexRows = rows.map(r => r.join(' & ')).join(' \\\\ ');
+          const latex = `\\begin{bmatrix} ${latexRows} \\end{bmatrix}`;
+          const id = `__M${matrixStore.length}__`;
+          matrixStore.push({ id, rows, latex });
+          return id;
+        } catch (e) {
+          throw new Error('Matrix parse failure: ' + e.message);
+        }
+      });
+    }
+
+    function replaceFunctionCalls(src) {
+      let out = src;
+      try {
+        out = out.replace(/int\((.*?)\)/g, (m, argsRaw) => {
+          const args = splitTopLevel(argsRaw, ',');
+          if (args.length === 3) return `\\int_{${args[0]}}^{${args[1]}} ${args[2]}`;
+          if (args.length === 1) return `\\int ${args[0]}`;
+          throw new Error('Integral syntax expects int(lower, upper, expression) or int(expression)');
+        });
+      } catch (e) { throw e; }
+      try {
+        out = out.replace(/lim\((.*?)\)/g, (m, argsRaw) => {
+          const args = splitTopLevel(argsRaw, ',');
+          if (args.length !== 3) throw new Error('Limit syntax expects lim(variable, target, expression)');
+          return `\\lim_{${args[0]} \\to ${args[1]}} ${args[2]}`;
+        });
+      } catch (e) { throw e; }
+      try {
+        out = out.replace(/sqrt\((.*?)\)/g, (m, inner) => `\\sqrt{${inner}}`);
+      } catch (e) { throw e; }
+      return out;
+    }
+
+    function replaceFractions(src) {
+      try {
+        return src.replace(/(\b[\w^+\-().]+\b)\s*\/\s*(\b[\w^+\-().]+\b)/g, (m, a, b) => `\\frac{${a}}{${b}}`);
+      } catch (e) {
+        throw new Error('Fraction conversion failed: ' + e.message);
+      }
+    }
+
+    function restoreMatrices(src, matrixStore) {
+      let out = src;
+      for (const m of matrixStore) {
+        out = out.replaceAll(m.id, m.latex);
+      }
+      return out;
+    }
+
+    function matrixPreviewNode(rows) {
+      const wrap = document.createElement('span');
+      wrap.className = 'matrix';
+      rows.forEach(r => {
+        const row = document.createElement('span');
+        row.className = 'matrix-row';
+        r.forEach(cell => { const c = document.createElement('span'); c.textContent = cell.trim(); row.appendChild(c); });
+        wrap.appendChild(row);
+      });
+      return wrap;
+    }
+
+    function renderPreview(raw, matrices) {
+      previewOut.innerHTML = '';
+      const withTokens = raw;
+      const parts = withTokens.split(/(__M\d+__)/g);
+      for (const part of parts) {
+        const found = matrices.find(m => m.id === part);
+        if (found) { previewOut.appendChild(matrixPreviewNode(found.rows)); continue; }
+        let seg = part.replace(/sqrt\((.*?)\)/g, '<span class="sqrt">$1</span>');
+        seg = seg.replace(/(\b[\w^+\-().]+\b)\s*\/\s*(\b[\w^+\-().]+\b)/g, '<span class="frac"><span>$1</span><span class="bar"></span><span>$2</span></span>');
+        const span = document.createElement('span');
+        span.innerHTML = seg;
+        previewOut.appendChild(span);
+      }
+    }
+
+    function compileInputEngine() {
+      const raw = input.value;
+      errorLine.textContent = '';
+      let matrixStore = [];
+      try {
+        let step = raw;
+        try { step = processMatrices(step, matrixStore); } catch (err) { throw err; }
+        try { step = replaceFunctionCalls(step); } catch (err) { throw err; }
+        try { step = replaceFractions(step); } catch (err) { throw err; }
+        const latex = restoreMatrices(step, matrixStore);
+        latexOut.textContent = latex;
+        renderPreview(raw, matrixStore);
+      } catch (err) {
+        errorLine.textContent = err.message || 'Syntax parsing error. Please review your expression.';
+      }
+    }
+
+    document.querySelector('.toolbar').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-macro]');
+      if (!btn) return;
+      const macro = btn.dataset.macro;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const text = input.value;
+      input.value = text.slice(0, start) + macro + text.slice(end);
+      const cursor = start + macro.length;
+      input.focus();
+      input.setSelectionRange(cursor, cursor);
+      compileInputEngine();
+    });
+
+    input.addEventListener('input', compileInputEngine);
+
+    const docMap = {
+      privacy: {
+        t: 'Privacy Policy',
+        b: 'This tool runs locally in your browser and stores only your formula/habit-free editor data in local state when needed. No personal account, external API transfer, or third-party analytics scripts are required by default. Ad placements are placeholders until you explicitly enable your own AdSense script.'
+      },
+      terms: {
+        t: 'Terms of Service',
+        b: 'By using this page you accept that outputs are provided as-is for educational and productivity use. You are responsible for verifying mathematical correctness in high-stakes environments. Automated scraping, abuse, or unlawful use is prohibited.'
+      },
+      about: {
+        t: 'About Us',
+        b: 'NovaTeX Forge was designed as a performance-first, keyboard-native mathematical syntax workspace. The mission is to reduce friction between plain input and formal mathematical notation for students, researchers, and engineers.'
+      }
+    };
+
+    const modal = document.getElementById('docModal');
+    document.querySelectorAll('[data-doc]').forEach(el => {
+      el.addEventListener('click', () => {
+        const d = docMap[el.dataset.doc];
+        document.getElementById('docTitle').textContent = d.t;
+        document.getElementById('docBody').textContent = d.b;
+        modal.showModal();
+      });
+    });
+    document.getElementById('closeModal').addEventListener('click', () => modal.close());
+
+    compileInputEngine();
+  </script>
+</body>
+</html>
